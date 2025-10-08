@@ -1,0 +1,27 @@
+.footer-outer {
+  width: 100%;
+  background-color: #e7f5e9;
+  box-sizing: border-box;
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  text-align: center;
+  color: #4b5563;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+/* hace que el formulario sea más ancho pero responsivo y controlado */
+.form-wide {
+  width: 100%;
+  max-width: none; /* opcional si ya tienes max-width; lo controlamos con width+clamp */
+  margin-left: auto;
+  margin-right: auto;
+  /* ancho adaptable: mínimo 680px, ideal 88vw, máximo 1400px */
+  width: clamp(680px, 88vw, 1400px);
+  box-sizing: border-box;
+}

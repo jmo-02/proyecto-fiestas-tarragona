@@ -1,0 +1,43 @@
+:root {
+  --primary-color: #22c55e;
+  --primary-hover: #15803d;
+  --bg-color: #f0fdf4;
+  --text-color: #1f2937;
+  --border-color: #d1fae5;
+  --card-bg: #ffffff;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+/* 🔹 Layout general */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 🔹 Contenido central (tarjeta interna) */
+.content {
+  flex: 1;
+  max-width: 1000px; /* reduced to fit form container better */
+  margin: 40px auto;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+/* 🔹 Texto placeholder para futuras vistas */
+.placeholder {
+  text-align: center;
+  color: #4b5563;
+  font-style: italic;
+  margin-top: 40px;
+}
