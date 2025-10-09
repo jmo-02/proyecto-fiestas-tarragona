@@ -3,7 +3,7 @@ import axios from "axios";
 import "./VentaList.css"; // reutiliza algunos estilos existentes
 import "./ConsultasVentas.css";
 
-const API_BASE = "http://localhost:5000/api/ventas";
+const API_BASE = "https://proyecto-ventas-inmobiliaria.onrender.com/api/ventas";
 
 export default function Consultas() {
   const [mes, setMes] = useState(1);

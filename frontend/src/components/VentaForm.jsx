@@ -4,7 +4,7 @@ import axios from "axios";
 import "./VentaForm.css";
 
 
-const API_URL = "http://localhost:5000/api/ventas";
+const API_URL = "https://proyecto-ventas-inmobiliaria.onrender.com/api/ventas";
 
 export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
   const [tipo, setTipo] = useState("Casa");
