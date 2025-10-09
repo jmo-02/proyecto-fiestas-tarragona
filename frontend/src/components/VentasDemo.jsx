@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Ventas from "../lib/ventas";
 
-const API_URL = "https://proyecto-ventas-inmobiliaria.onrender.com/api/ventas";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function VentasDemo() {
   const [ventasRaw, setVentasRaw] = useState([]);
