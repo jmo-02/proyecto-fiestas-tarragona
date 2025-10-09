@@ -147,3 +147,19 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.form-success {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #d1fae5;
+}
+
+.venta-form .form-success {
+  text-align: center;
+  max-width: 92%;
+  margin-left: auto;
+  margin-right: auto;
+}

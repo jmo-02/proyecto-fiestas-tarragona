@@ -14,7 +14,7 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitError, setSubmitError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [serverResponse, setServerResponse] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(null);
 
   const computeErrors = () => {
     const errs = {};
@@ -54,7 +54,7 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
-    setServerResponse(null);
+    setSubmitSuccess(null);
     const errs = computeErrors();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
@@ -66,12 +66,17 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
       const añoNum = parseInt(String(año).trim(), 10);
       const mesNum = Number(mes);
       const precioNum = parseFloat(String(precio).replace(',', '.').trim());
-  const resp = await axios.post(API_URL, { tipo, año: añoNum, mes: mesNum, precio: precioNum });
-  setServerResponse({ ok: true, status: resp.status, data: resp.data, message: resp.data?.message || 'Venta registrada correctamente' });
-  // Si el backend devuelve la venta creada, notificar al padre con el objeto
-  const created = resp.data && (resp.data.venta || resp.data || null);
-  if (created && typeof onVentaCreada === 'function') onVentaCreada(created);
-  onVentaAgregada && onVentaAgregada(); // Notifica al padre que se agregó una nueva venta
+
+      const resp = await axios.post(API_URL, { tipo, año: añoNum, mes: mesNum, precio: precioNum });
+
+      // Mostrar solo el mensaje de éxito enviado por la API
+      const msg = resp?.data?.mensaje || resp?.data?.message || 'Venta registrada correctamente';
+      setSubmitSuccess(msg);
+
+      const created = resp.data && (resp.data.venta || resp.data || null);
+      if (created && typeof onVentaCreada === 'function') onVentaCreada(created);
+      onVentaAgregada && onVentaAgregada(); // Notifica al padre que se agregó una nueva venta
+
       setAño("");
       setMes("");
       setPrecio("");
@@ -80,9 +85,7 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
       console.error(error);
       const serverMsg = error?.response?.data?.message || error?.message || 'Error al registrar la venta';
       setSubmitError(serverMsg);
-      setServerResponse({ ok: false, status: error?.response?.status, data: error?.response?.data, message: serverMsg });
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -98,6 +101,7 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
         <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
           <option value="Casa">Casa</option>
           <option value="Apartamento">Apartamento</option>
+        {submitSuccess && <p className="form-success">{submitSuccess}</p>}
         </select>
       </div>
 
@@ -134,18 +138,8 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
       </div>
 
       <button type="submit" disabled={isFormInvalid || loading}>{loading ? 'Enviando...' : 'Guardar venta'}</button>
+      {submitSuccess && <p className="form-success">{submitSuccess}</p>}
       {submitError && <p className="form-error">{submitError}</p>}
-
-      {serverResponse && (
-        <div className={`server-response ${serverResponse.ok ? 'ok' : 'error'}`} role="status">
-          <strong>{serverResponse.ok ? 'OK' : 'Error'}</strong>
-          <span className="sr-status"> {serverResponse.status}</span>
-          <div className="server-message">{String(serverResponse.message)}</div>
-          {serverResponse.data && typeof serverResponse.data === 'object' && (
-            <pre className="server-data">{JSON.stringify(serverResponse.data, null, 2)}</pre>
-          )}
-        </div>
-      )}
     </form>
   );
 }
