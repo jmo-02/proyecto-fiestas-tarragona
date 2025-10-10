@@ -1,4 +1,4 @@
-// src/components/VentaForm.jsx
+i// src/components/VentaForm.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./VentaForm.css";
@@ -137,7 +137,7 @@ export default function VentaForm({ onVentaAgregada, onVentaCreada }) {
         {fieldErrors.precio && <div className="field-error">{fieldErrors.precio}</div>}
       </div>
 
-      <button type="submit" disabled={isFormInvalid || loading}>{loading ? 'Enviando...' : 'Guardar venta'}</button>
+      <button type="submit" disabled={isFormInvalid || loading}>{loading ? 'Enviando...' : 'Registrar evento'}</button>
       {submitSuccess && <p className="form-success">{submitSuccess}</p>}
       {submitError && <p className="form-error">{submitError}</p>}
     </form>
