@@ -1,4 +1,4 @@
-i// src/components/VentaForm.jsx
+// src/components/VentaForm.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./VentaForm.css";
