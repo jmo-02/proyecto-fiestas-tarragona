@@ -1,0 +1,41 @@
+/* Copy of ConsultasVentas.css for ResumenFiestas */
+
+.consultas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consulta-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls.left { justify-content: flex-start }
+.controls.right { justify-content: flex-end }
+
+.consulta-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.result-card {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e6eef6;
+  background: #f8fafc;
+}
+
+.result-ok { border-color: #d1fae5; background: #ecfdf5; color: #065f46 }
+.result-error { border-color: #fecaca; background: #fff1f2; color: #991b1b }
+.result-loading { opacity: 0.8 }

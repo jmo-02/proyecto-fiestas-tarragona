@@ -1,0 +1,80 @@
+/* Copy of VentaList.css, used for FiestasList to preserve styles */
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+.ventas-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: none; /* sit cleanly on the green card background */
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ventas-table thead th {
+  background: #f2fff7; /* match the soft green wrapper so header blends */
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 700;
+  /* use the global primary color when available */
+  color: var(--primary-color, #15803d);
+  border-bottom: 1px solid rgba(21,128,61,0.06);
+}
+
+.ventas-table tbody td {
+  padding: 12px 14px;
+  /* slightly more visible row separators (green tint) */
+  border-bottom: 1px solid rgba(15,23,42,0.07);
+  color: #0f172a;
+  background: transparent;
+}
+
+.ventas-table tbody tr:nth-child(odd),
+.ventas-table tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+/* Subtle hover to improve row readability */
+.ventas-table tbody tr:hover td {
+  background: rgba(21,128,61,0.02);
+  transition: background 120ms ease;
+}
+
+.content-card h2 {
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .ventas-table thead {
+    display: none;
+  }
+
+  .ventas-table, .ventas-table tbody, .ventas-table tr, .ventas-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .ventas-table tr {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  .ventas-table td {
+    padding: 8px 10px;
+    border: none;
+  }
+
+  .ventas-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+    color: #334155;
+  }
+}
