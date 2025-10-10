@@ -5,204 +5,133 @@ const router = express.Router();
 const ventasRef = db.collection("ventas");
 
 /**
- * 🟢 Crear una nueva venta
- * Ejemplo: POST /api/ventas
- * Body JSON:
- * {
- *   "tipo": "Casa",
- *   "año": 2025,
- *   "mes": 3,
- *   "precio": 1500000
- * }
+import express from "express";
+import db from "../firebase/config.js";
+
+const router = express.Router();
+const fiestasRef = db.collection("fiestas");
+
+// Helpers de cálculo
+function tarifaPorInvitados(invitados) {
+  if (invitados >= 1 && invitados <= 50) return 25000;
+  if (invitados >= 51 && invitados <= 100) return 20000;
+  if (invitados > 100) return 15000;
+  return 0;
+}
+
+function cuotaPorHoras(horas) {
+  if (horas >= 1 && horas <= 3) return 50000;
+  if (horas >= 4 && horas <= 6) return 100000;
+  if (horas > 6) return 200000;
+  return 0;
+}
+
+/**
+ * POST /api/fiestas
+ * Body: { cedula, invitados, horas }
  */
 router.post("/", async (req, res) => {
   try {
-    const { tipo, año, mes, precio } = req.body;
+    const { cedula, invitados, horas } = req.body || {};
 
-    // ✅ Validación básica
-    if (!tipo || !año || !mes || !precio) {
-      return res.status(400).json({ error: "Todos los campos son obligatorios." });
+    // Validaciones
+    if (!cedula || invitados === undefined || horas === undefined) {
+      return res.status(400).json({ error: "Los campos cedula, invitados y horas son obligatorios." });
     }
 
-    if (tipo !== "Casa" && tipo !== "Apartamento") {
-      return res.status(400).json({ error: "Tipo inválido. Debe ser 'Casa' o 'Apartamento'." });
+    if (typeof cedula !== "string" || cedula.trim() === "") {
+      return res.status(400).json({ error: "Cedula debe ser una cadena no vacía." });
     }
 
-    if (isNaN(año) || año < 2000 || año > 2100) {
-      return res.status(400).json({ error: "Año inválido." });
+    const invitadosNum = Number(invitados);
+    const horasNum = Number(horas);
+
+    if (!Number.isFinite(invitadosNum) || invitadosNum <= 0) {
+      return res.status(400).json({ error: "Invitados debe ser un número positivo." });
     }
 
-    if (isNaN(mes) || mes < 1 || mes > 12) {
-      return res.status(400).json({ error: "Mes inválido (1-12)." });
+    if (!Number.isFinite(horasNum) || horasNum <= 0) {
+      return res.status(400).json({ error: "Horas debe ser un número positivo." });
     }
 
-    if (isNaN(precio) || precio <= 0) {
-      return res.status(400).json({ error: "Precio inválido." });
-    }
+    // Calcular montoTotal
+    const tarifa = tarifaPorInvitados(invitadosNum);
+    const cuotaHoras = cuotaPorHoras(horasNum);
+    const montoTotal = invitadosNum * tarifa + cuotaHoras;
 
-    // Guardar en Firestore
-    const newVenta = { tipo, año, mes, precio };
-    await ventasRef.add(newVenta);
+    const nuevaFiesta = {
+      cedula: cedula.trim(),
+      invitados: invitadosNum,
+      horas: horasNum,
+      montoTotal,
+    };
 
-    res.status(201).json({
-      mensaje: "Venta registrada correctamente.",
-      venta: newVenta
-    });
+    await fiestasRef.add(nuevaFiesta);
+
+    return res.status(201).json(nuevaFiesta);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al registrar la venta." });
+    return res.status(500).json({ error: "Error al registrar la fiesta." });
   }
 });
 
-
 /**
- * 🔵 Obtener todas las ventas registradas
- * Ejemplo: GET /api/ventas
+ * GET /api/fiestas
+ * Retorna todas las fiestas
  */
 router.get("/", async (req, res) => {
   try {
-    const snapshot = await ventasRef.get();
+    const snapshot = await fiestasRef.get();
 
-    if (snapshot.empty) {
-      return res.status(200).json([]);
-    }
+    if (snapshot.empty) return res.status(200).json([]);
 
-    const ventas = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    res.status(200).json(ventas);
+    const fiestas = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    return res.status(200).json(fiestas);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al obtener las ventas" });
-  }
-});
-
-
-
-/**
- * 1️⃣ Suma total de ventas por mes
- * Ejemplo: GET /api/ventas/suma?mes=3
- */
-router.get("/suma", async (req, res) => {
-  try {
-    const mes = parseInt(req.query.mes);
-    if (!mes || mes < 1 || mes > 12) return res.status(400).json({ error: "Mes inválido" });
-
-    const snapshot = await ventasRef.where("mes", "==", mes).get();
-
-    let suma = 0;
-    snapshot.forEach(doc => {
-      suma += doc.data().precio || 0;
-    });
-
-    res.json({ mes, totalVentas: suma });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al calcular la suma" });
+    return res.status(500).json({ error: "Error al obtener las fiestas." });
   }
 });
 
 /**
- * 2️⃣ Promedio mensual por tipo
- * Ejemplo: GET /api/ventas/promedios
+ * GET /api/fiestas/resumen
+ * Devuelve totalInvitados, totalHoras y conteo de fiestas por rango de horas
  */
-router.get("/promedios", async (req, res) => {
+router.get("/resumen", async (req, res) => {
   try {
-    const snapshot = await ventasRef.get();
+    const snapshot = await fiestasRef.get();
 
-    let sumaCasas = 0, countCasas = 0;
-    let sumaAptos = 0, countAptos = 0;
+    let totalInvitados = 0;
+    let totalHoras = 0;
+    let fiestasRango_1_3 = 0;
+    let fiestasRango_4_6 = 0;
+    let fiestasRango_mayor6 = 0;
 
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc) => {
       const data = doc.data();
-      if (data.tipo === "Casa") {
-        sumaCasas += data.precio || 0;
-        countCasas++;
-      } else if (data.tipo === "Apartamento") {
-        sumaAptos += data.precio || 0;
-        countAptos++;
-      }
+      const invitados = Number(data.invitados) || 0;
+      const horas = Number(data.horas) || 0;
+
+      totalInvitados += invitados;
+      totalHoras += horas;
+
+      if (horas >= 1 && horas <= 3) fiestasRango_1_3++;
+      else if (horas >= 4 && horas <= 6) fiestasRango_4_6++;
+      else if (horas > 6) fiestasRango_mayor6++;
     });
 
-    const promedioCasas = countCasas > 0 ? sumaCasas / countCasas : 0;
-    const promedioAptos = countAptos > 0 ? sumaAptos / countAptos : 0;
-
-    res.json({
-      promedioCasas,
-      promedioApartamentos: promedioAptos
+    return res.status(200).json({
+      totalInvitados,
+      totalHoras,
+      fiestasRango_1_3,
+      fiestasRango_4_6,
+      fiestasRango_mayor6,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al calcular promedios" });
-  }
-});
-
-/**
- * 3️⃣ Mes con mayor venta en un año
- * Ejemplo: GET /api/ventas/mes-mayor?año=2025
- */
-router.get("/mes-mayor", async (req, res) => {
-  try {
-    const año = parseInt(req.query.año);
-    if (!año) return res.status(400).json({ error: "Año inválido" });
-
-    const snapshot = await ventasRef.where("año", "==", año).get();
-
-    const ventasPorMes = {};
-
-    snapshot.forEach(doc => {
-      const { mes, precio } = doc.data();
-      if (!ventasPorMes[mes]) ventasPorMes[mes] = 0;
-      ventasPorMes[mes] += precio || 0;
-    });
-
-    let mesMayor = null;
-    let maxVenta = 0;
-    for (const [mes, total] of Object.entries(ventasPorMes)) {
-      if (total > maxVenta) {
-        maxVenta = total;
-        mesMayor = mes;
-      }
-    }
-
-    res.json({ año, mesMayor, totalVentas: maxVenta });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al buscar el mes con mayor venta" });
-  }
-});
-
-/**
- * 4️⃣ Menor venta por tipo de inmueble
- * Ejemplo: GET /api/ventas/menor-por-tipo?tipo=Casa
- */
-router.get("/menor-por-tipo", async (req, res) => {
-  try {
-    const tipo = req.query.tipo;
-    if (!tipo) return res.status(400).json({ error: "Tipo requerido" });
-
-    const snapshot = await ventasRef.where("tipo", "==", tipo).get();
-
-    let menorVenta = Infinity;
-    let añoMenor = null;
-    let mesMenor = null;
-
-    snapshot.forEach(doc => {
-      const { año, mes, precio } = doc.data();
-      if (precio < menorVenta) {
-        menorVenta = precio;
-        añoMenor = año;
-        mesMenor = mes;
-      }
-    });
-
-    res.json({ tipo, año: añoMenor, mes: mesMenor, menorVenta });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al buscar la menor venta" });
+    return res.status(500).json({ error: "Error al calcular el resumen." });
   }
 });
 
 export default router;
+    console.error(error);
