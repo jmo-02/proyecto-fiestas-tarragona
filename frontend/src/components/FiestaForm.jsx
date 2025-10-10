@@ -94,7 +94,7 @@ export default function FiestaForm({ onFiestaAgregada, onFiestaCreada }) {
         {fieldErrors.horas && <div className="field-error">{fieldErrors.horas}</div>}
       </div>
 
-      <button type="submit" disabled={isFormInvalid || loading}>{loading ? 'Enviando...' : 'Registrar fiesta'}</button>
+      <button type="submit" disabled={isFormInvalid || loading}>{loading ? 'Enviando...' : 'Registrar evento'}</button>
       {submitSuccess && <p className="form-success">{submitSuccess}</p>}
       {submitError && <p className="form-error">{submitError}</p>}
     </form>
