@@ -45,8 +45,11 @@ export default function ResumenFiestas() {
   const r1 = Number(result.fiestasRango_1_3 ?? result.fiestas_rango_1_3 ?? result.rango_1_3 ?? result.range_1_3 ?? 0)
   const r2 = Number(result.fiestasRango_4_6 ?? result.fiestas_rango_4_6 ?? result.rango_4_6 ?? result.range_4_6 ?? 0)
   const r3 = Number(result.fiestasRango_7plus ?? result.fiestasRango_7_plus ?? result.fiestas_rango_7_plus ?? result.rango_7_plus ?? result.range_7_plus ?? 0)
+  // newer API returns fiestasRango_mayor6 (or similar); include as fallback
+  const r3_alt = Number(result.fiestasRango_mayor6 ?? result.fiestas_rango_mayor6 ?? result.fiestasRango_mayor_6 ?? result.fiestas_rango_mayor_6 ?? 0)
+  const r3_final = r3 || r3_alt
 
-  const anyData = totalHoras > 0 || totalInvitados > 0 || r1 > 0 || r2 > 0 || r3 > 0
+  const anyData = totalHoras > 0 || totalInvitados > 0 || r1 > 0 || r2 > 0 || r3_final > 0
       if (!anyData) return <div className="result-empty">No hay resultados disponibles.</div>
 
       return (
@@ -75,7 +78,7 @@ export default function ResumenFiestas() {
 
             <div className="result-item">
               <div className="result-label">Cantidad de fiestas de más de 6 horas</div>
-              <div className="result-value">{r3}</div>
+              <div className="result-value">{r3_final}</div>
             </div>
           </div>
         </div>
@@ -121,6 +124,7 @@ export default function ResumenFiestas() {
         montoTotal: 'Monto total',
         totalInvitados: 'Total invitados',
         totalHoras: 'Total horas',
+        fiestasRango_mayor6: 'Fiestas rango >6',
         totalFiestas: 'Total de fiestas',
         totalVentas: 'Total ventas',
         promedioInvitados: 'Promedio invitados',
