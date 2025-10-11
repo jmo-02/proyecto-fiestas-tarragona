@@ -4,19 +4,34 @@ import db from "../firebase/config.js";
 const router = express.Router();
 const fiestasRef = db.collection("fiestas");
 
-// Helpers de cálculo
-function tarifaPorInvitados(invitados) {
-  if (invitados >= 1 && invitados <= 50) return 25000;
-  if (invitados >= 51 && invitados <= 100) return 20000;
-  if (invitados > 100) return 15000;
+// Valor por invitado según cantidad
+function valorPorInvitado(invitados) {
+  if (invitados >= 1 && invitados <= 100) return 8000;
+  if (invitados >= 101 && invitados <= 500) return 6000;
+  if (invitados > 500) return 4000;
   return 0;
 }
 
-function cuotaPorHoras(horas) {
-  if (horas >= 1 && horas <= 3) return 50000;
-  if (horas >= 4 && horas <= 6) return 100000;
-  if (horas > 6) return 200000;
+// Tarifa fija según horas
+function tarifaPorHoras(horas) {
+  if (horas >= 1 && horas <= 3) return 100000;
+  if (horas >= 4 && horas <= 6) return 200000;
+  if (horas > 6) return 300000;
   return 0;
+}
+
+// Formatea con separadores de miles y sin decimales (ej. 1.650.000)
+function formatoMiles(valor) {
+  return new Intl.NumberFormat("es-ES").format(Math.round(valor));
+}
+
+// Calcula el monto total: (invitados * valorPorInvitado) + tarifaPorHoras
+function calcularMontoTotal(invitados, horas) {
+  const valorInvitado = valorPorInvitado(invitados);
+  const tarifa = tarifaPorHoras(horas);
+  const montoTotal = invitados * valorInvitado + tarifa;
+  const montoTotalFormateado = formatoMiles(montoTotal);
+  return { montoTotal, montoTotalFormateado };
 }
 
 /**
@@ -27,7 +42,6 @@ router.post("/", async (req, res) => {
   try {
     const { cedula, invitados, horas } = req.body || {};
 
-    // Validaciones
     if (!cedula || invitados === undefined || horas === undefined) {
       return res.status(400).json({ error: "Los campos cedula, invitados y horas son obligatorios." });
     }
@@ -47,21 +61,22 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Horas debe ser un número positivo." });
     }
 
-    // Calcular montoTotal
-    const tarifa = tarifaPorInvitados(invitadosNum);
-    const cuotaHoras = cuotaPorHoras(horasNum);
-    const montoTotal = invitadosNum * tarifa + cuotaHoras;
+    const { montoTotal, montoTotalFormateado } = calcularMontoTotal(invitadosNum, horasNum);
 
     const nuevaFiesta = {
       cedula: cedula.trim(),
       invitados: invitadosNum,
       horas: horasNum,
-      montoTotal,
+      montoTotal, // se guarda como número en Firestore
     };
 
-    await fiestasRef.add(nuevaFiesta);
+    const docRef = await fiestasRef.add(nuevaFiesta);
 
-    return res.status(201).json(nuevaFiesta);
+    return res.status(201).json({
+      id: docRef.id,
+      ...nuevaFiesta,
+      montoTotalFormateado, // representación para mostrar en la tabla/UI
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Error al registrar la fiesta." });
@@ -70,7 +85,7 @@ router.post("/", async (req, res) => {
 
 /**
  * GET /api/fiestas
- * Retorna todas las fiestas
+ * Retorna todas las fiestas (incluye monto formateado para mostrar)
  */
 router.get("/", async (req, res) => {
   try {
@@ -78,7 +93,19 @@ router.get("/", async (req, res) => {
 
     if (snapshot.empty) return res.status(200).json([]);
 
-    const fiestas = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const fiestas = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const montoNum = Number(data.montoTotal) || 0;
+      return {
+        id: doc.id,
+        cedula: data.cedula,
+        invitados: data.invitados,
+        horas: data.horas,
+        montoTotal: montoNum,
+        montoTotalFormateado: formatoMiles(montoNum),
+      };
+    });
+
     return res.status(200).json(fiestas);
   } catch (error) {
     console.error(error);
