@@ -64,18 +64,18 @@ export default function FiestasList() {
               {fiestas.map((f, idx) => (
                 fiestas.length > 0 && fiestas[0].cedula !== undefined ? (
                   <tr key={f.id || f._id || idx}>
-                    <td>{f.cedula || '—'}</td>
-                    <td>{f.invitados != null ? String(f.invitados) : '—'}</td>
-                    <td>{f.horas != null ? String(f.horas) : '—'}</td>
-                    <td style={{ textAlign: 'right' }}>{(f.montoTotal != null) ? `${new Intl.NumberFormat().format(f.montoTotal)}` : '—'}</td>
+                    <td data-label="Cédula"><span className="cell-value">{f.cedula || '—'}</span></td>
+                    <td data-label="Invitados"><span className="cell-value">{f.invitados != null ? String(f.invitados) : '—'}</span></td>
+                    <td data-label="Horas"><span className="cell-value">{f.horas != null ? String(f.horas) : '—'}</span></td>
+                    <td data-label="Monto total" style={{ textAlign: 'right' }}><span className="cell-value">{(f.montoTotal != null) ? `${new Intl.NumberFormat().format(f.montoTotal)}` : '—'}</span></td>
                   </tr>
                 ) : (
                   <tr key={f.id || f._id || idx}>
-                    <td>{f.titulo || f.nombre || '—'}</td>
-                    <td>{f.tipo || '—'}</td>
-                    <td>{(typeof f.mes === 'number') ? monthNames[f.mes - 1] : f.mes}</td>
-                    <td>{f.anio || f.year || '—'}</td>
-                    <td style={{ textAlign: 'right' }}>{(f.precio || f.price) ? `${f.precio || f.price}` : '—'}</td>
+                    <td data-label="Título"><span className="cell-value">{f.titulo || f.nombre || '—'}</span></td>
+                    <td data-label="Tipo"><span className="cell-value">{f.tipo || '—'}</span></td>
+                    <td data-label="Mes"><span className="cell-value">{(typeof f.mes === 'number') ? monthNames[f.mes - 1] : f.mes}</span></td>
+                    <td data-label="Año"><span className="cell-value">{f.anio || f.year || '—'}</span></td>
+                    <td data-label="Precio" style={{ textAlign: 'right' }}><span className="cell-value">{(f.precio || f.price) ? `${f.precio || f.price}` : '—'}</span></td>
                   </tr>
                 )
               ))}

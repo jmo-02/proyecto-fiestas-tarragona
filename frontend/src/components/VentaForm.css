@@ -105,6 +105,29 @@
   box-sizing: border-box;
 }
 
+/* Mobile form adjustments */
+@media (max-width: 720px) {
+  .venta-form {
+    padding: 14px;
+    gap: 10px;
+  }
+  .venta-form .field-wrapper > input,
+  .venta-form .field-wrapper > select {
+    width: 100%;
+    max-width: 100%;
+  }
+  .venta-form .field-wrapper > label {
+    width: 100%;
+    text-align: left;
+  }
+  .venta-form button {
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+  }
+  .form-wide { width: 100%; }
+}
+
 /* Server response area */
 .server-response {
   margin-top: 14px;

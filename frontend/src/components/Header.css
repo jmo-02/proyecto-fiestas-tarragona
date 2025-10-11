@@ -33,7 +33,49 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 720px) {
+  .header-inner {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .header-inner nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .header-inner h2 { font-size: 1rem }
+}
+
 .header-inner nav button:hover {
   background: var(--primary-hover);
   color: white;
+}
+
+/* hamburger and responsive nav */
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  width: 40px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.hamburger .bar {
+  display: block;
+  height: 2px;
+  width: 20px;
+  background: white;
+  margin: 3px 0;
+  border-radius: 2px;
+}
+
+@media (max-width: 720px) {
+  .hamburger { display: inline-flex }
+  .header-inner nav { display: none }
+  .header-inner nav.open { display: flex; flex-direction: column; gap: 8px; position: absolute; top: 64px; right: 12px; background: var(--primary-color); padding: 10px; border-radius: 8px; z-index: 50 }
+  .header-inner nav.open button { background: transparent; color: white; padding: 8px 10px; border-radius: 6px; text-align: left }
 }

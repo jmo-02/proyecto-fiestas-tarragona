@@ -34,6 +34,23 @@ body {
   box-sizing: border-box;
 }
 
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .content {
+    margin: 20px 12px;
+    padding: 20px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    margin: 12px 8px;
+    padding: 14px;
+    border-radius: 8px;
+  }
+}
+
 /* 🔹 Texto placeholder para futuras vistas */
 .placeholder {
   text-align: center;
