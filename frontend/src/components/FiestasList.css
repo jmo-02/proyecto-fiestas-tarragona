@@ -15,7 +15,7 @@
 }
 
 .ventas-table thead th {
-  background: #f2fff7; /* match the soft green wrapper so header blends */
+  background: #ffffff; /* keep header white for contrast */
   padding: 12px 14px;
   text-align: left;
   font-weight: 700;
@@ -62,19 +62,33 @@
     margin-bottom: 12px;
     border-radius: 8px;
     padding: 10px;
-    background: #fff;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(15,23,42,0.04);
   }
 
   .ventas-table td {
-    padding: 8px 10px;
+    padding: 10px 12px;
     border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .ventas-table td::before {
-    content: attr(data-label);
+    content: attr(data-label) ":";
     font-weight: 700;
-    display: block;
-    margin-bottom: 6px;
+    display: inline-block;
+    margin-right: 12px;
     color: #334155;
+    width: 45%;
+    flex: 0 0 45%;
+  }
+
+  .ventas-table .cell-value {
+    display: inline-block;
+    width: 55%;
+    text-align: right;
+    color: #0f172a;
+    font-weight: 600;
   }
 }

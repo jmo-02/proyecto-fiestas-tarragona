@@ -1,16 +1,30 @@
 import "./Header.css";
 
-import React from 'react';
+import React, { useState } from 'react';
+
 export default function Header({ setVistaActual }) {
+  const [open, setOpen] = useState(false);
+
+  const go = (view) => {
+    setOpen(false);
+    setVistaActual && setVistaActual(view);
+  }
+
   return (
     <div className="header-outer">
       <header className="header-inner">
         <h2>Fiestas y Eventos Tarragona</h2>
-        <nav className="header-nav">
-          {/* <button onClick={() => setVistaActual && setVistaActual('inicio')}>Inicio</button> */}
-          <button onClick={() => setVistaActual && setVistaActual('registrar-fiesta')}>Registrar Fiesta</button>
-          <button onClick={() => setVistaActual && setVistaActual('fiestas')}>Fiestas</button>
-          <button onClick={() => setVistaActual && setVistaActual('resumen-fiestas')}>Resumen Fiestas</button>
+
+        <button className="hamburger" aria-label="Abrir menú" onClick={() => setOpen(o => !o)}>
+          <span className="bar" />
+          <span className="bar" />
+          <span className="bar" />
+        </button>
+
+        <nav className={`header-nav ${open ? 'open' : ''}`}>
+          <button onClick={() => go('registrar-fiesta')}>Registrar Fiesta</button>
+          <button onClick={() => go('fiestas')}>Fiestas</button>
+          <button onClick={() => go('resumen-fiestas')}>Resumen Fiestas</button>
         </nav>
       </header>
     </div>
