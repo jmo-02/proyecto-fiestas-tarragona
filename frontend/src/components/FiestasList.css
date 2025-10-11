@@ -69,24 +69,24 @@
   .ventas-table td {
     padding: 10px 12px;
     border: none;
-    display: flex;
-    justify-content: space-between;
+    /* Use grid to align label and value consistently */
+    display: grid;
+    grid-template-columns: 40% 60%;
     align-items: center;
+    gap: 8px;
   }
 
   .ventas-table td::before {
     content: attr(data-label) ":";
     font-weight: 700;
-    display: inline-block;
-    margin-right: 12px;
     color: #334155;
-    width: 45%;
-    flex: 0 0 45%;
+    grid-column: 1 / 2;
+    justify-self: start;
   }
 
   .ventas-table .cell-value {
-    display: inline-block;
-    width: 55%;
+    grid-column: 2 / 3;
+    justify-self: end;
     text-align: right;
     color: #0f172a;
     font-weight: 600;
